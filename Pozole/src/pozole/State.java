@@ -15,14 +15,16 @@ public class State
     private char movement='n';
     private State parent=null;
     
+
+    //primer constructor, sirve para hacer      
     public State(String sts)
     {   
         int n=0;
-        this.board = new byte[4][4];
+        this.board = new byte[4][4]; //para que el this?
         for(int i=0;i<4;i++)
             for(int j=0;j<4;j++)
             {   
-                char c=sts.charAt(n);
+                char c=sts.charAt(n);       
                 board[i][j]=(byte)Character.getNumericValue(c); 
                 if(board[i][j]==0)
                 {
@@ -32,8 +34,11 @@ public class State
                 n++;
             }
     }
-    
-    public State (byte[][] board, char movement, State parent)
+
+    //la clase maneja sobrecarga de constructores
+    public State (byte[][] board, char movement, State parent) 
+    /*este constructor genera una nueva matriz a partir
+    de un estado anterior */ 
     {
         this.movement = movement;
         this.board = new byte[4][4];
@@ -51,6 +56,7 @@ public class State
     }
     
     public void show()
+    //solo muestra el movimiento de la matriz y la accion realizada
     {
         switch(movement)
         {
@@ -70,8 +76,11 @@ public class State
             System.out.println("\n+-+-+-+");
         }
     }
+
+
     
     public void swap(int i,int j)
+    //solo hace un cambio de variables xd
     {
         int aux=board[i][j];
         board[i][j]=0;
@@ -84,8 +93,8 @@ public class State
     // Función sucesor
     public List<State> getNeighbors()
     {
-        List<State> neighbors =  new ArrayList<>();
-        byte[][] newBoard = new byte[4][4];
+        List<State> neighbors =  new ArrayList<>(); //lista para guardar a los vecinos
+        byte[][] newBoard = new byte[4][4]; // otra matriz para clonar y poder modificar
         
         // Clone board
         for(int i=0;i<4;i++)
@@ -139,14 +148,15 @@ public class State
     
     // Test objetivo
     public boolean isGoal(State goal)
+    //solo valida que la matriz actual y la meta sean igualaes para poder parar la busqueda
     {
-        boolean success=true;
+        boolean success=true; 
         byte[][] goalBoard = goal.getBoard();
         for(int i=0;i<4;i++)
             for(int j=0;j<4;j++)
             {
                 if(goalBoard[i][j]!=board[i][j])
-                {
+                {   
                     success = false;
                     break;
                 }

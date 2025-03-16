@@ -168,8 +168,16 @@ public class Tablero extends JFrame
         boolean success = false;
         totalNodes = 0;
         totalLoops = 0;
-        State initialState = new State(start);
+        State initialState = new State(start); /*constructor para generar la matriz de estado inicial, esta esta
+        indefinida y depende completamente del atributo start */     
         State goalState   = new State(goal);
+        /*constructor 1 para iniciar la matriz meta que queda representada de la siguiente manera por el metodo
+        Character.getNumericValue(c); 
+        [1 , 2 , 3 , 4]
+        [5 , 6 , 7 , 8]
+        [9, 10, 11 ,12] A = 10 ... , 15 = E es en codigo hexadecimal    
+        [13 , 14, 15,0]
+         */
         ArrayList<State> visited = new ArrayList <>();
         ArrayDeque<State> queue = new ArrayDeque <>();
 

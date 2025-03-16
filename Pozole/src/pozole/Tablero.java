@@ -34,7 +34,7 @@ public class Tablero extends JFrame
     
 
 
-    private final String start = "123456789cdeabf0";
+    private final String start = "123456789abcd0ef";
     private final String goal  = "123456789abcdef0"; 
     
 
@@ -323,7 +323,7 @@ public class Tablero extends JFrame
     {
         boolean exist = false;
         for(State ns: l)
-        {
+        { 
             if(ns.isEqual(s)) // Un método propio para comparar estados
             {
                 exist = true;

@@ -278,7 +278,6 @@ public class Tablero extends JFrame
     
     
     
-    
     private void showBoard(State lastNode)
     {
         // Recuperar la ruta
@@ -332,7 +331,8 @@ public class Tablero extends JFrame
         boolean exist = false;
         for(State ns: l)
         { 
-            if(ns.isEqual(s)) // Un método propio para comparar estados
+            //se cambio isEqual por isGoal ya que son exactamente el mismo metodo 
+            if(ns.isGoal(s)) // Un método propio para comparar estados
             {
                 exist = true;
                 break;

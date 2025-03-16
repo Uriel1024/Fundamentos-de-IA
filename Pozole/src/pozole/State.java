@@ -85,7 +85,7 @@ public class State
         int aux=board[i][j];
         board[i][j]=0;
         board[posI][posJ]=(byte)aux;
-        posI=i;
+        posI=i; // i y j tienen la posicion del espacio vacio 
         posJ=j;
     }
     
@@ -184,7 +184,7 @@ public class State
         return movement;
     }
     
-     public boolean isEqual(State s)
+ /*    public boolean isEqual(State s)
     {
         boolean isEqual=true;
         byte[][] sBoard = s.getBoard();
@@ -198,5 +198,8 @@ public class State
                 }
             }
         return isEqual;        
-    }
-}
+    } 
+    Este metodo es igual a isGoal, solo se hace 1 llamada en el tablero, es preferible reutilizar el metodo de is goal
+    para ahorra recursos
+    */ 
+ }

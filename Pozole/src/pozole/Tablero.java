@@ -40,7 +40,7 @@ public class Tablero extends JFrame
 
     private final JMenuItem solveB = new JMenuItem("Solve BFS");
     private final JMenuItem solveD = new JMenuItem("Solve DFS");
-    private final JSlider velocity = new JSlider(1,150,150);
+    private final JSlider velocity = new JSlider(1,200,1500);
     
 
     private long startTime; 
@@ -62,8 +62,11 @@ public class Tablero extends JFrame
         Dimension pantalla = Toolkit.getDefaultToolkit().getScreenSize();
         int width = pantalla.width;
         int height = pantalla.height;
-        this.setBounds((width-566)/2,(height-650)/2,566,650);
-        velocity.setBounds(10,510,485,20);
+        this.setBounds((width-650)/2,(height-700)/2,610,700 );
+
+
+        velocity.setBounds(10,610,485,20);
+        velocity.setInverted(true);
         
         JMenuBar mainMenu = new JMenuBar();
         JMenu    file = new JMenu("File");
@@ -74,12 +77,15 @@ public class Tablero extends JFrame
         file.add(solveD);
         file.add(exit);
         this.setJMenuBar(mainMenu);
-        velocity.setInverted(true);
+
         
         this.setLayout(null);
         this.imagePieces("imagenes/background.jpg");
         paintPieces();
         this.add(velocity);
+
+
+
         exit.addActionListener(evt -> gestionarExit(evt));  
         solveB.addActionListener(evt -> whichAlgorithm(evt)); 
         solveD.addActionListener(evt -> whichAlgorithm(evt));  
@@ -150,7 +156,6 @@ public class Tablero extends JFrame
 
     }
     
-    // Este es el método que realmente busca mediante le técnica en anchura
     
     private void whichAlgorithm(ActionEvent e)
     {
@@ -158,7 +163,6 @@ public class Tablero extends JFrame
             solveDFS(); // En caso de que se trate de búsqueda en profundidad
         else
             solveBFS();
-    
     }
     
     // Breadth First Search 
@@ -276,6 +280,8 @@ public class Tablero extends JFrame
         }
     }
     
+
+
     
     
     private void showBoard(State lastNode)
@@ -339,5 +345,6 @@ public class Tablero extends JFrame
             }
         }
         return exist;
-    }    
+    }
+        
 }

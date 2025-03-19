@@ -106,7 +106,7 @@ public class State
         if(posI>0)
         {
             int newI = posI-1;
-            State newState = new State(newBoard,'u', this);                
+            State newState = new State(newBoard,'u', this); //crea un nuevo estado                 
             newState.swap(newI, posJ); // 
             neighbors.add(newState);                        
         }
@@ -140,7 +140,7 @@ public class State
                 
         return neighbors;
     }
-    
+     
     public byte[][] getBoard()
     {
         return board;
@@ -189,7 +189,7 @@ public class State
         boolean isEqual=true;
         byte[][] sBoard = s.getBoard();
         for(int i=0;i<4;i++)
-            for(int j=0;j<4  ;j++)
+            for(int j=0;j<   ;j++)
             {
                 if(sBoard[i][j]!=board[i][j])
                 {

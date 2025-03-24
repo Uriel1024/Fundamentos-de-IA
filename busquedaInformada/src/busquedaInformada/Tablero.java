@@ -24,7 +24,8 @@ public class Tablero extends JFrame {
     private ImageIcon sampleIcon;
     private ImageIcon actualIcon;
     private ImageIcon motherICon;
-    private ImageIcon path;
+    private ImageIcon torch;
+
 
     private int bandera = 0;
     private boolean naveColocada = false;
@@ -34,7 +35,7 @@ public class Tablero extends JFrame {
     private Agente agente1;
     private Agente agente2;
 
-    private final BackGroundPanel fondo = new BackGroundPanel(new ImageIcon("imagenes/plano.jpg"));
+    private final BackGroundPanel fondo = new BackGroundPanel(new ImageIcon("imagenes/minecra.png"));
 
     private final JMenu generate = new JMenu("Random generate");
     private final JMenu settings = new JMenu("Settings");
@@ -87,6 +88,10 @@ public class Tablero extends JFrame {
         generate.add(randomSample);
         generate.add(randomObstacle);
 
+
+        torch = new ImageIcon("imagenes/antorcha.png");
+        torch = new ImageIcon(torch.getImage().getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH));
+
         agente1Img = new ImageIcon("imagenes/agente1.png");
         agente1Img = new ImageIcon(agente1Img.getImage().getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH));
 
@@ -132,8 +137,8 @@ public class Tablero extends JFrame {
         }
         addWindowListener(new MyWindowAdapter());
 
-         agente1 = new Agente("Agente1 ",agente1Img,matrix,tablero );
-         agente2 = new Agente("Agente2", agente2Img, matrix, tablero);
+         agente1 = new Agente("Steve ",agente1Img,matrix,tablero, torch );
+         agente2 = new Agente("Vegetta 777", agente2Img, matrix, tablero, torch);
 
         Agente.setNavePosicion(naveFila,navecColumna);
 

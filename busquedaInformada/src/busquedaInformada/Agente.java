@@ -19,7 +19,12 @@ public class Agente extends Thread {
     private final int[][] matrix;
     private final JLabel tablero[][];
     private boolean bombaPlantada = false;
+    private final ImageIcon torch;
+
     private Clip clip;
+
+
+
 
     private int contadorSamples = 0; //contador de samples recogidos
     private JLabel casillaAnterior;
@@ -29,13 +34,13 @@ public class Agente extends Thread {
     private static int naveFila = -1;
     private static int naveColumna = -1;
 
-    public Agente(String nombre, ImageIcon icon, int[][] matrix, JLabel tablero[][])
+    public Agente(String nombre, ImageIcon icon, int[][] matrix, JLabel tablero[][], ImageIcon torch)
     {
         this.nombre = nombre;
         this.icon = icon;
         this.matrix = matrix;
         this.tablero = tablero;
-
+        this.torch = torch;
 
         this.i = aleatorio.nextInt(matrix.length);
         this.j = aleatorio.nextInt(matrix.length);
@@ -97,6 +102,8 @@ public class Agente extends Thread {
                 matrix[newI][newJ] = 0;
                 bombaPlantada = false;
             }
+
+            dejarRastro(i, j);
             i = newI;
             j = newJ;
 
@@ -115,10 +122,10 @@ public class Agente extends Thread {
     }
 
 
-    private void plantada(){
+    private void plantada (){
         if(bombaPlantada){
             try {
-                AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("audio/bomb.wav"));
+                AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("audio/chest.wav"));
                 clip = AudioSystem.getClip();
                 clip.open(inputStream);
                 clip.start();
@@ -129,12 +136,24 @@ public class Agente extends Thread {
 
     }   //funcion para que diga bomb has been planted
 
+    public void dejarRastro(int fila, int columna){
+        if(matrix[fila][columna] == 0){
+            matrix[fila][columna] = 4;
+            tablero[fila][columna].setIcon(torch);
+            System.out.println(nombre + "  coloca antorcha en -> fila " + fila + " columna " + columna);
+        }
+    }
+
+
     private boolean posicionValida(int newI, int newJ){
         if(newI < 0 || newI >= matrix.length || newJ < 0 || newJ >= matrix[0].length){
             return false;
         }
         return matrix[newI][newJ] != 1;
     }
+
+
+
     private void moverAleatoriamente(){
         int direccion = aleatorio.nextInt(5);
         int newI = i;
@@ -172,18 +191,18 @@ public class Agente extends Thread {
 
     private void agregarPosicionVisitada(int i, int j){
         casillaAnterior = tablero[i][j];
-
     }
 
-    public synchronized void actualizarPosicion()
-    {
+    public synchronized void actualizarPosicion(){
         JLabel casillaActual = tablero[i][j];
 
         if(casillaAnterior != null){
             int filaAnterior = (casillaAnterior.getY() - 10) /50;
             int columnaAnterior = (casillaAnterior.getX() -10) / 50;
 
-            if(matrix[filaAnterior][columnaAnterior] != 2){
+            if(matrix[filaAnterior][columnaAnterior] == 4){
+                casillaAnterior.setIcon(torch);
+            }else if(matrix[filaAnterior][columnaAnterior] != 2 ){
                 casillaAnterior.setIcon(null);
             }
         }
@@ -191,7 +210,9 @@ public class Agente extends Thread {
         int filaActual = i;
         int columnaActual = j;
 
-        if(matrix[filaActual][columnaActual] != 2){
+        if(matrix[filaActual][columnaActual] == 4){
+            casillaActual.setIcon(torch);
+        }else if(matrix[filaActual][columnaActual] != 2){
             casillaActual.setIcon(icon);
         }
 
@@ -199,6 +220,8 @@ public class Agente extends Thread {
 
         System.out.println(nombre + " en -> Fila: " + filaActual + ", Columna: " + columnaActual);
     }
+
+
     public static void setNavePosicion(int fila, int columna){
         naveFila = fila;
         naveColumna = columna;

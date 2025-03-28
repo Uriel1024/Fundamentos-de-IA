@@ -40,7 +40,7 @@ public class Tablero extends JFrame {
     // Menús y controles
     private final JMenu generate = new JMenu("Random generate");
     private final JMenu settings = new JMenu("Settings");
-    private final JMenuItem randomSample = new JMenuItem("Random Sample");
+    private final JMenuItem randomCluster = new JMenuItem("Random cluster");
     private final JMenuItem randomObstacle = new JMenuItem("Random Obstacle");
     private final JMenuItem music = new JMenuItem("Stop Music");
     private Clip clip;
@@ -94,9 +94,8 @@ public class Tablero extends JFrame {
         file.add(music);
         settings.add(mothershipItem);
         settings.add(obstacleItem);
-        settings.add(sampleItem);
         settings.add(clusterItem);
-        generate.add(randomSample);
+        generate.add(randomCluster);
         generate.add(randomObstacle);
 
         // Cargar y escalar los íconos
@@ -112,8 +111,6 @@ public class Tablero extends JFrame {
         obstacleIcon = new ImageIcon("imagenes/obstacle.png");
         obstacleIcon = new ImageIcon(obstacleIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH));
 
-        sampleIcon = new ImageIcon("imagenes/sample.png");
-        sampleIcon = new ImageIcon(sampleIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH));
 
         motherICon = new ImageIcon("imagenes/motherICon.png");
         motherICon = new ImageIcon(motherICon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH));
@@ -142,13 +139,6 @@ public class Tablero extends JFrame {
                 actualSeleccionado = null;
             }
         });
-        sampleItem.addItemListener(evt -> {
-            if (sampleItem.isSelected()) {
-                actualSeleccionado = sampleIcon;
-            } else {
-                actualSeleccionado = null;
-            }
-        });
         mothershipItem.addItemListener(evt -> {
             if (mothershipItem.isSelected()) {
                 actualSeleccionado = motherICon;
@@ -164,7 +154,7 @@ public class Tablero extends JFrame {
                 actualSeleccionado = null;
             }
         });
-        randomSample.addActionListener(evt -> generarAleatorio(sampleIcon, 3));
+        randomCluster.addActionListener(evt -> generarAleatorio(clusterSampleIcon4,40));
         randomObstacle.addActionListener(evt -> generarAleatorio(obstacleIcon, 1));
         music.addActionListener(evt -> {
             if (clip != null) {

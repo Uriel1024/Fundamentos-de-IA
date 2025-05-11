@@ -81,7 +81,7 @@ postre(yogur_natural_descremado, 75).
 postre(compota_de_manzana, 100).       
 postre(mousse_de_limon_light, 112).    
 postre(helado_de_agua, 125).           
-
+    
 %Lacteo
 lacteo(leche_desnatada, 34).        
 lacteo(leche_deslactosada, 49).          
@@ -113,9 +113,9 @@ colacion(requeson_con_fresas, 120).
 
 
 % Regla para armar el desayuno
-desayuno(D1, D2, D3, KCal) :-
-    fruta(D1, K1), cereales(D2, K2),  huevo(D3, K3),
-    KCal is K1 + K2 + K3.
+desayuno(D1, D2, D3, D4, KCal) :-
+    fruta(D1, K1), cereales(D2, K2), huevo(D3, K3), lacteo(D4,K4),
+    KCal is K1 + K2 + K3 + K4.
 
 %Regla para tener la primer colacion
 colacion1(P1,P2, KCal):-
@@ -139,25 +139,18 @@ merienda(M1, M2, KCal) :-
     KCal is K1 + K2.
 
 
-%Regla que define las comidas
+% Regla que genera lista de menus
+
 dietas(Gasto, ListaMenus) :-
-    InferiorD is Gasto * 0.20, SuperiorD is Gasto* 0.25,
-    InferiorC is Gasto * 0.30, SuperiorC is Gasto* 0.40,        
-    InferiorM is Gasto * 0.20, SuperiorM is Gasto* 0.25,
-    InferiorC1 is Gasto * 0.10, SuperiorC1 is Gasto* 0.15,
-    InferiorC2 is Gasto * 0.10, SuperiorC2 is Gasto* 0.15,
-    findall(menu([D1,D2,D3],[C1,C2,C3],[M1,M2],[Q1,Q2],[P1,P2],TotalKCal), (
-        desayuno(D1,D2,D3,K1),
-        colacion1(Q1,Q2,K4),
+    findnsols(100, menu([D1,D2,D3,D4],[P1,P2],[C1,C2,C3],[Q1,Q2],[M1,M2],TotalKCal),(
+        desayuno(D1,D2,D3,D4,K1),
+        colacion1(P1,P2,K4),
         comida(C1,C2,C3,K2),
-        colacion2(P1,P2,K5),
+        colacion2(Q1,Q2,K5),
         merienda(M1,M2,K3),
-        K1 >= InferiorD, K1 =< SuperiorD,
-        K2 >= InferiorC, K2 =< SuperiorC,
-        K3 >= InferiorM, K3 =< SuperiorM,
-        K4 >= InferiorC1, k4 =< SuperiorC1,
-        K5 >= InferiorC2, k5 =< SuperiorC2,
-        TotalKCal is K1 + K2 + K3 + K4 + K5
+        TotalKCal is K1 + K2 + K3 + K4 + K5,
+        Inferior is Gasto * 0.9,
+        Superior is Gasto * 1.1,
+        TotalKCal >= Inferior,
+        TotalKCal =< Superior
     ), ListaMenus).
-
-

@@ -1,278 +1,189 @@
-        package nutricion;
+package nutricion;
 
-        import java.awt.Font;
-        import java.awt.GridLayout;
-        import java.awt.Image;
-        import javax.swing.*;
-        import java.util.*;
-        import org.jpl7.*;
+import org.jpl7.Query;
+import org.jpl7.Term;
 
-        public class GUIFrame extends JFrame
-        {
-            private final JLabel[] desayuno;
-            private final JLabel[] comida;
-            private final JLabel[] merienda;
-            private final JTextField gastoField;
-            private final JTextArea resultadosArea;
-            private final JLabel jMenu = new JLabel();
-            private final JButton firstButton;
-            private final JButton prevButton;
-            private final JButton nextButton;
-            private final JButton lastButton;
-            private List<MenuDieta> menus = new ArrayList<>();
-            private int currentIndex = 0;
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
-            public GUIFrame() {
-                setTitle("Planificador de Nutrición Dra. Miku");
-                setSize(800, 670);
-                setLocationRelativeTo(null);
-                setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                this.setLayout(null);
+public class GUIFrame extends JFrame {
+    private final JTextField ageField, heightField, weightField;
+    private final JRadioButton maleRadio, femaleRadio;
+    private final JTextArea resultadosArea;
+    private final JLabel jMenu;
+    private final JButton firstButton, prevButton, nextButton, lastButton;
+    private final JLabel[] desayuno, almuerzo, comida, merienda, cena;
 
-                JLabel imag = new JLabel();
+    private List<MenuDieta> menus = new ArrayList<>();
+    private int currentIndex = 0;
 
-                ImageIcon icono = new ImageIcon("img/miku.png");
-                Image imagen = icono.getImage();
-                int w =  imagen.getWidth(null);
-                int h =  imagen.getHeight(null);
-                imagen = icono.getImage().getScaledInstance((int) (w/1.2), (int)(h/1.2), Image.SCALE_SMOOTH);
-                ImageIcon iconoEscalado = new ImageIcon(imagen);
-                imag.setIcon(iconoEscalado);
+    public GUIFrame() {
+        setTitle("Planificador de Nutrición Dra. Miku");
+        setSize(1000, 800);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLayout(null);
 
-                imag.setBounds(450,1,imagen.getWidth(null),imagen.getHeight(null));
-                this.add(imag);
+        // Imagen de Miku
+        JLabel imag = new JLabel();
+        ImageIcon icono = new ImageIcon("img/miku.png");
+        Image imagen = icono.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+        imag.setIcon(new ImageIcon(imagen));
+        imag.setBounds(780, 10, 200, 200);
+        add(imag);
 
-                JLabel label = new JLabel("Gasto metabólico (kcal): ");
-                gastoField = new JTextField(10);
-                JButton buscarButton = new JButton("Buscar Menús");
+        // Datos usuario
+        add(new JLabel("Sexo:") {{ setBounds(10, 10, 50, 25); }});
+        maleRadio = new JRadioButton("Masculino"); maleRadio.setBounds(70, 10, 100, 25); add(maleRadio);
+        femaleRadio = new JRadioButton("Femenino"); femaleRadio.setBounds(180, 10, 100, 25); add(femaleRadio);
+        new ButtonGroup() {{ add(maleRadio); add(femaleRadio); }};
 
-                label.setBounds(10,10,150,30);
-                gastoField.setBounds(150,10,100,30);
-                buscarButton.setBounds(250,10,150,30);
+        add(new JLabel("Edad (años):") {{ setBounds(10, 50, 100, 25); }});
+        ageField = new JTextField(); ageField.setBounds(120, 50, 60, 25); add(ageField);
 
-                this.add(label);
-                this.add(gastoField);
-                this.add(buscarButton);
+        add(new JLabel("Estatura (m):") {{ setBounds(200, 50, 100, 25); }});
+        heightField = new JTextField(); heightField.setBounds(310, 50, 60, 25); add(heightField);
 
-                resultadosArea = new JTextArea();
-                resultadosArea.setEditable(false);
-                resultadosArea.setLineWrap(true);
-                resultadosArea.setWrapStyleWord(true);
-                JScrollPane panelResultado = new JScrollPane(resultadosArea);
-                JPanel breakfastPanel = new JPanel();
-                JPanel lunchPanel = new JPanel();
-                JPanel snackPanel = new JPanel();
+        add(new JLabel("Peso (kg):") {{ setBounds(390, 50, 80, 25); }});
+        weightField = new JTextField(); weightField.setBounds(480, 50, 60, 25); add(weightField);
 
-                breakfastPanel.setLayout(new GridLayout(1,4));
-                lunchPanel.setLayout(new GridLayout(1,3));
-                snackPanel.setLayout(new GridLayout(1,2));
+        JButton calcularButton = new JButton("Calcular TMB y Buscar Menús");
+        calcularButton.setBounds(560, 50, 200, 25); add(calcularButton);
 
-                JLabel et1 = new JLabel("Desayuno");
-                JLabel et2 = new JLabel("Comida");
-                JLabel et3 = new JLabel("Merienda");
+        // Resultados
+        jMenu = new JLabel(); jMenu.setBounds(10, 90, 300, 25);
+        jMenu.setFont(new Font("Consolas", Font.BOLD, 14));
+        add(jMenu);
 
-                desayuno = new JLabel[4];
-                comida = new JLabel[3];
-                merienda = new JLabel[2];
+        resultadosArea = new JTextArea(); resultadosArea.setEditable(false);
+        resultadosArea.setLineWrap(true); resultadosArea.setWrapStyleWord(true);
+        JScrollPane scroll = new JScrollPane(resultadosArea);
+        scroll.setBounds(10, 120, 760, 80);
+        add(scroll);
 
-                for (int i=0;i<desayuno.length;i++)
-                {
-                        desayuno[i] = new JLabel();
-                        desayuno[i].setIcon(null);
-                        breakfastPanel.add(desayuno[i]);
-                }
+        // Botones de navegación justo debajo de resultados
+        firstButton = new JButton("|<");
+        prevButton  = new JButton("<");
+        nextButton  = new JButton(">");
+        lastButton  = new JButton(">|");
+        JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
+        navPanel.setBounds(500, 210, 760, 30);
+        navPanel.add(firstButton);
+        navPanel.add(prevButton);
+        navPanel.add(nextButton);
+        navPanel.add(lastButton);
+        add(navPanel);
 
-                for (int i=0;i<comida.length;i++)
-                {
-                        comida[i] = new JLabel();
-                        comida[i].setIcon(null);
-                        lunchPanel.add(comida[i]);
-                }
+        // Etiquetas y paneles de platillos
+        String[] labels = {"Desayuno", "Almuerzo", "Comida", "Merienda", "Cena"};
+        int y = 250;
+        JPanel pDesayuno = panelConLayout(10, y, 760, 80, 1, 4);
+        add(label(labels[0], 10, y - 25)); add(pDesayuno);
 
-                for (int i=0;i<merienda.length;i++)
-                {
-                        merienda[i] = new JLabel();
-                        merienda[i].setIcon(null);
-                        snackPanel.add(merienda[i]);
-                }
+        JPanel pAlmuerzo = panelConLayout(10, y + 100, 760, 80, 1, 2);
+        add(label(labels[1], 10, y + 75)); add(pAlmuerzo);
 
-                firstButton = new JButton("First");
-                prevButton = new JButton("Prev");
-                nextButton = new JButton("Next");
-                lastButton = new JButton("Last");
+        JPanel pComida = panelConLayout(10, y + 200, 760, 80, 1, 3);
+        add(label(labels[2], 10, y + 175)); add(pComida);
 
-                jMenu.setBounds(10,50,200,20);
-                jMenu.setFont(new Font("Consolas", Font.BOLD, 14));
-                et1.setFont(new Font("Consolas", Font.BOLD, 14));
-                et2.setFont(new Font("Consolas", Font.BOLD, 14));
-                et3.setFont(new Font("Consolas", Font.BOLD, 14));
+        JPanel pMerienda = panelConLayout(10, y + 300, 760, 80, 1, 2);
+        add(label(labels[3], 10, y + 275)); add(pMerienda);
 
-                panelResultado.setBounds(10,80,500,100);
-                et1.setBounds(10,190,100,20);
-                et2.setBounds(10,320,100,20);
-                et3.setBounds(10,450,100,20);
-                breakfastPanel.setBounds(10,210,400,100);
-                lunchPanel.setBounds(10,340,300,100);
-                snackPanel.setBounds(10,470,200,100);
+        JPanel pCena = panelConLayout(10, y + 400, 760, 80, 1, 2);
+        add(label(labels[4], 10, y + 375)); add(pCena);
 
-                firstButton.setBounds(10,580,100,30);
-                prevButton.setBounds(110,580,100,30);
-                nextButton.setBounds(210,580,100,30);
-                lastButton.setBounds(310,580,100,30);
+        // Arrays de JLabels
+        desayuno = new JLabel[4]; for (int i = 0; i < 4; i++) pDesayuno.add(desayuno[i] = new JLabel());
+        almuerzo = new JLabel[2]; for (int i = 0; i < 2; i++) pAlmuerzo.add(almuerzo[i] = new JLabel());
+        comida   = new JLabel[3]; for (int i = 0; i < 3; i++) pComida.add(comida[i] = new JLabel());
+        merienda = new JLabel[2]; for (int i = 0; i < 2; i++) pMerienda.add(merienda[i] = new JLabel());
+        cena     = new JLabel[2]; for (int i = 0; i < 2; i++) pCena.add(cena[i]     = new JLabel());
 
-                this.add(jMenu);
-                this.add(panelResultado);
-                this.add(et1);
-                this.add(et2);
-                this.add(et3);
-                this.add(breakfastPanel);
-                this.add(lunchPanel);
-                this.add(snackPanel);
-                this.add(firstButton);
-                this.add(prevButton);
-                this.add(nextButton);
-                this.add(lastButton);
+        // Acciones
+        calcularButton.addActionListener(e -> onBuscar());
+        firstButton.addActionListener(e -> mostrar(0));
+        prevButton.addActionListener(e -> mostrar(currentIndex - 1));
+        nextButton.addActionListener(e -> mostrar(currentIndex + 1));
+        lastButton.addActionListener(e -> mostrar(menus.size() - 1));
+    }
 
-                firstButton.addActionListener(e -> mostrarPrimero());
-                prevButton.addActionListener(e -> mostrarAnterior());
-                nextButton.addActionListener(e -> mostrarSiguiente());
-                lastButton.addActionListener(e -> mostrarUltimo());
+    private JPanel panelConLayout(int x,int y,int w,int h,int rows,int cols) {
+        JPanel p = new JPanel(new GridLayout(rows, cols)); p.setBounds(x,y,w,h); return p;
+    }
+    private JLabel label(String text,int x,int y){ JLabel l=new JLabel(text); l.setBounds(x,y,100,25); return l; }
 
-                buscarButton.addActionListener(e -> buscarMenus());
-            }
+    private void onBuscar() {
+        resultadosArea.setText(""); menus.clear(); jMenu.setText("");
+        try {
+            boolean isMale = maleRadio.isSelected(), isFemale = femaleRadio.isSelected();
+            if(!isMale && !isFemale) throw new IllegalArgumentException("Seleccione sexo");
+            int age = Integer.parseInt(ageField.getText());
+            double height = Double.parseDouble(heightField.getText())*100;
+            double weight = Double.parseDouble(weightField.getText());
+            double tmb = isMale
+                    ? 88.36+13.4*weight+4.8*height-5.7*age
+                    : 447.6+9.2*weight+3.1*height-4.3*age;
+            int gasto = (int)Math.round(tmb);
 
-            private void buscarMenus() {
-                resultadosArea.setText("");
-                String gastoTexto = gastoField.getText();
-                try {
-                    int gasto = java.lang.Integer.parseInt(gastoTexto);
-                    menus = obtenerMenusDesdeProlog(gasto);
-                    currentIndex = 0;
-                    if (menus.isEmpty()) {
-                        resultadosArea.append("No se encontraron menús que cumplan con el criterio.\n");
-                    } else {
-                        mostrarMenuActual();
-                    }
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, "Por favor ingrese un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-
-            private void mostrarMenuActual() {
-                if (!menus.isEmpty() && currentIndex >= 0 && currentIndex < menus.size())
-                {
-                    resultadosArea.setText(menus.get(currentIndex).toString());
-                    jMenu.setText("Menu: " + (currentIndex+1)+ " de " + menus.size() );
-                    MenuDieta m = menus.get(currentIndex);
-                    List<String> mDesayuno = m.getDesayuno();
-                    List<String> mComida = m.getComida();
-                    List<String> mMerienda = m.getMerienda();
-
-                    for (JLabel food1 : desayuno) {
-                        food1.setIcon(null);
-                    }
-
-                    for (JLabel food2 : comida) {
-                        food2.setIcon(null);
-                    }
-
-                    for (JLabel food3 : merienda) {
-                        food3.setIcon(null);
-                    }
-
-                    int i=0;
-
-                    for (String alimento: mDesayuno)
-                    {
-                        ImageIcon icon = new ImageIcon("img/"+alimento+".jpg");
-                        Image imagen = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-                        desayuno[i].setIcon(new ImageIcon(imagen));
-                        i++;
-                    }
-
-                    i=0;
-                    for (String alimento: mComida)
-                    {
-                        ImageIcon icon = new ImageIcon("img/"+alimento+".jpg");
-                        Image imagen = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-                        comida[i].setIcon(new ImageIcon(imagen));
-                        i++;
-                    }
-
-                    i=0;
-                    for (String alimento: mMerienda)
-                    {
-                        ImageIcon icon = new ImageIcon("img/"+alimento+".jpg");
-                        Image imagen = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-                        merienda[i].setIcon(new ImageIcon(imagen));
-                        i++;
-                    }
-                }
-            }
-
-            private void mostrarPrimero() {
-                currentIndex = 0;
-                mostrarMenuActual();
-            }
-
-            private void mostrarAnterior() {
-                if (currentIndex > 0) {
-                    currentIndex--;
-                    mostrarMenuActual();
-                }
-            }
-
-            private void mostrarSiguiente() {
-                if (currentIndex < menus.size() - 1) {
-                    currentIndex++;
-                    mostrarMenuActual();
-                }
-            }
-
-            private void mostrarUltimo() {
-                currentIndex = menus.size() - 1;
-                mostrarMenuActual();
-            }
-
-            private List<MenuDieta> obtenerMenusDesdeProlog(int gasto) {
-                List<MenuDieta> resultados = new ArrayList<>();
-                try {
-                    Query cargar = new Query("consult('knowledge.pl')");
-                    cargar.hasSolution();
-
-                    String consulta = "dietas(" + gasto + ", Menus)";
-                    Query q = new Query(consulta);
-
-                    if (q.hasSolution()) {
-                        Map<String, Term> sol = q.oneSolution();
-                        Term menusTerm = sol.get("Menus");
-
-                        if (menusTerm.isList()) {
-                            Term[] menusArray = menusTerm.listToTermArray();
-                            for (Term menu : menusArray) {
-                                Term[] partes = menu.arg(1).listToTermArray();
-                                List<String> mDesayuno = convertirTermLista(partes);
-                                partes = menu.arg(2).listToTermArray();
-                                List<String> mComida = convertirTermLista(partes);
-                                partes = menu.arg(3).listToTermArray();
-                                List<String> mMerienda = convertirTermLista(partes);
-                                int kcal = menu.arg(4).intValue();
-
-                                resultados.add(new MenuDieta(mDesayuno, mComida, mMerienda, kcal));
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return resultados;
-            }
-
-            private List<String> convertirTermLista(Term[] terminos) {
-                List<String> lista = new ArrayList<>();
-                for (Term t : terminos) {
-                    lista.add(t.name());
-                }
-                return lista;
-            }
+            resultadosArea.append("TMB estimado: "+gasto+" kcal\n\n");
+            menus = obtenerMenusDesdeProlog(gasto);
+            if(menus.isEmpty()) { resultadosArea.append("No hay menús disponibles.\n"); return; }
+            mostrar(0);
+        } catch(Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error: "+ex.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void mostrar(int idx) {
+        if(idx<0||idx>=menus.size()) return;
+        currentIndex=idx;
+        MenuDieta m = menus.get(idx);
+        jMenu.setText("Menú "+(idx+1)+" de "+menus.size());
+        resultadosArea.setText(m.toString());
+        actualizar(desayuno, m.getDesayuno());
+        actualizar(almuerzo, m.getAlmuerzo());
+        actualizar(comida,   m.getComida());
+        actualizar(merienda, m.getMerienda());
+        actualizar(cena,     m.getCena());
+    }
+
+    private void actualizar(JLabel[] labels, List<String> items) {
+        for(int i=0;i<labels.length;i++) {
+            if(i<items.size()){
+                ImageIcon ic=new ImageIcon("img/"+items.get(i)+".jpg");
+                Image im=ic.getImage().getScaledInstance(80,80,Image.SCALE_SMOOTH);
+                labels[i].setIcon(new ImageIcon(im));
+            } else labels[i].setIcon(null);
+        }
+    }
+
+    private List<MenuDieta> obtenerMenusDesdeProlog(int gasto) {
+        List<MenuDieta> res = new ArrayList<>();
+        try {
+            new Query("consult('knowledge.pl')").hasSolution();
+            Query q = new Query("dietas("+gasto+",Menus)");
+            if(q.hasSolution()){
+                Term list = q.oneSolution().get("Menus");
+                for(Term menu: list.listToTermArray()){
+                    List<String> d = term2list(menu.arg(1));
+                    List<String> a = term2list(menu.arg(2));
+                    List<String> c = term2list(menu.arg(3));
+                    List<String> me= term2list(menu.arg(4));
+                    List<String> ce= term2list(menu.arg(5));
+                    Term kt = menu.arg(6);
+                    int kcal = kt.isInteger()?kt.intValue():kt.arg(1).intValue();
+                    res.add(new MenuDieta(d,a,c,me,ce,kcal));
+                }
+            }
+        } catch(Exception e){ e.printStackTrace(); }
+        return res;
+    }
+
+    private List<String> term2list(Term t){ List<String> L=new ArrayList<>(); for(Term x:t.listToTermArray()) L.add(x.name()); return L; }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new GUIFrame().setVisible(true));
+    }
+}

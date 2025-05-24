@@ -30,6 +30,7 @@ public class Gui extends JFrame
     private final DefaultListModel listModel2 = new DefaultListModel();
     private final JTextArea displayArea = new JTextArea();
     private final JTextArea descripcionArea = new JTextArea();
+    private final JTextArea busquedaPropiedades = new JTextArea();
     private final JLabel imagen = new JLabel();
     
     
@@ -201,13 +202,29 @@ public class Gui extends JFrame
     
     private void gestionaPropiedades(ListSelectionEvent ev)
     {
-        // Debe agregar su código, para gestionat el evento 
-        // Haga una consulta a SW-Prolog con la regla:
-        // tiene_propiedad(P,L), 
-        // donde P es la propiedad y L es la lista de clases que la tienen
-        
+        System.out.println("Propiedad seleccionada");
         String selectedValue = (String) listaPropiedades.getSelectedValue();
-        // System.out.println(selectedValue);
+
+        if(selectedValue != null && !selectedValue.trim().isEmpty()){
+            String consulta = "tiene_propiedad(" + selectedValue.trim() + ", L)";
+            System.out.println("Ejecutando consulta:  " + consulta);
+            q1 = new Query(consulta);
+            String[] resultado = new String[0];
+            if (q1.hasSolution()){
+                Map solution = q1.nextSolution();
+                String claseString = solution.get("L").toString();
+                resultado = claseString.substring(claseString.indexOf("[")+1, claseString.indexOf("]")).split(",");
+                String p = "";
+                for (int i = 0; i < resultado.length; i++) {
+                    p += resultado[i].trim() + "\n";
+                }
+                busquedaPropiedades.setText(p);
+            }else{
+                final String menssage = "No se encontraron clases con la propiedad " + selectedValue + "-" ;
+                busquedaPropiedades.setText(menssage);
+            }
+        }
+        
         
     }
             

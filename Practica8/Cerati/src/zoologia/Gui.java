@@ -15,10 +15,6 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import org.jpl7.Query;
 
-/**
- *
- * @author 
- */
 public class Gui extends JFrame 
 {
     private Query q1;
@@ -64,16 +60,15 @@ public class Gui extends JFrame
         // Panel de Consulta Clases
 
         clases = consultaClases();
+
         for(int i=0;i<clases.length;i++)
             listModel1.addElement((clases[i]).trim());
         listaClases = new JList(listModel1);
 
+
         
         //Panel para consulta de clases
         consultaClasesPanel(tab01);
-
-        listaClases.addListSelectionListener(   evt -> gestionaClases(evt));
-        listaClases.setSelectedIndex(0);
 
 
         // Panel de Búsqueda por propiedades
@@ -135,6 +130,12 @@ public class Gui extends JFrame
         tab01.add(spProps);
         tab01.add(spDesc);
         tab01.add(imagen);
+
+
+        listaClases.addListSelectionListener(   evt -> gestionaClases(evt));
+        listaClases.setSelectedIndex(0);
+
+
     }
 
     private void buscarPorPropiedades(JPanel tab02){
@@ -144,18 +145,29 @@ public class Gui extends JFrame
         listaPropiedades = new JList(listModel2);
 
         JScrollPane spTodas = new JScrollPane(listaPropiedades);
+        JScrollPane clases = new JScrollPane(busquedaPropiedades);
+
+
 
         JLabel et04 = new JLabel("Todas las Propiedades");
+        JLabel et05 = new JLabel("Cumplen con la propiedad:");
 
         tab02.setLayout(null);
         et04.setBounds(10,10,300,20);
         et04.setFont(new Font("Arial",Font.BOLD,16));
+        et05.setBounds(420,10,300,20);
+        et05.setFont(new Font("Arial",Font.BOLD,16));
         spTodas.setBounds(10,30,400,500);
         listaPropiedades.setFont(new Font("Consolas",Font.BOLD,18));
         listaPropiedades.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
+        clases.setBounds(10,265,300,85);
+        busquedaPropiedades.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
+        busquedaPropiedades.setFont(new Font("Consolas",Font.PLAIN,16));
 
         tab02.add(et04);
         tab02.add(spTodas);
+        tab02.add(et05);
+        tab02.add(clases);
 
         listaPropiedades.addListSelectionListener(evt -> gestionaPropiedades(evt));
         listaPropiedades.setSelectedIndex(0);
@@ -209,7 +221,7 @@ public class Gui extends JFrame
             String consulta = "tiene_propiedad(" + selectedValue.trim() + ", L)";
             System.out.println("Ejecutando consulta:  " + consulta);
             q1 = new Query(consulta);
-            String[] resultado = new String[0];
+            String[] resultado = null;
             if (q1.hasSolution()){
                 Map solution = q1.nextSolution();
                 String claseString = solution.get("L").toString();

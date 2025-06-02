@@ -21,7 +21,7 @@ main:-repeat,
 
 motor:-borraResp,(deduce(Objeto,_) ->
       (nl,write('Eres la cancion : '),write(Objeto),
-       nl,writeln('\nLlegue a esa conclusion porque te identificas con : '), findall(X, si(X), L), writeln(L));
+       nl,writeln('\nLlegue a esa conclusion porque te identificas con las emociones/sentimientos: '), findall(X, si(X), L), writeln(L));
       (nl,write('\nNo eres ninguna cancion de Cerati :( '))).
 
 
@@ -32,7 +32,7 @@ satisface(Atributo,_) :-
                      pregunta(Atributo))). %else pregunta(Atributo)
 
 pregunta(A) :-
-    write('Te identificas con '),
+    write('Te identificas con las emociones/sentimientos '),
     write(A), write('?'),
     read(Resp),
     nl,
@@ -40,7 +40,7 @@ pregunta(A) :-
       -> assert(si(A));                     %     assert(si(A))
          assert(no(A)), fail).          %else assert(no(A))
 
-    
+
 borraResp:-retractall(si(_)),retractall(no(_)).
 
 %Base del conocimiento para canciones 
@@ -120,7 +120,7 @@ te_llevo_para_que_me_lleves(X):-
     satisface(reciproco,X).
 
 tabu(X):-
-    satisface(deseo_prohubido,X),
+    satisface(deseo_prohibido,X),
     satisface(sacrificio_valentia,X),
     satisface(trascendencia_renacimiento,X).
 

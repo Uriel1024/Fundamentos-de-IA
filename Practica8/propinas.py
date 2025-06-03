@@ -114,6 +114,7 @@ tk.Label(frame, textvariable=comida_valor).pack(anchor='e', padx=10)
 # Resultado
 resultado_var = tk.StringVar()
 tk.Label(ventana, textvariable=resultado_var, font=('Arial', 12)).pack(pady=10)
+
 tk.Button(ventana, text="Ver funciones de membresía", command=mostrar_graficas).pack(pady=5)
 
 ventana.mainloop()

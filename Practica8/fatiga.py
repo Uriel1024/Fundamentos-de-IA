@@ -154,6 +154,15 @@ def calcular(event=None):
     interrupciones_valor.set(f"{interrupciones_slider.get():1.0f}")
     ruido_valor.set(f"{ruido_slider.get():.1f}")
 
+    nivel = sim.output['fatiga']
+    if nivel < 4:
+        mensaje = "Nivel de fatiga: BAJO"
+    elif nivel < 7:
+        mensaje = "Nivel de fatiga: MEDIO"
+    else:
+        mensaje = "Nivel de fatiga: ALTO"
+
+    resultado_var.set(f"{mensaje} ({nivel:.1f} de 10)")
 
 
 # Crear GUI
